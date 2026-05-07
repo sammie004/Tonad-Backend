@@ -254,4 +254,6 @@ const AuthMiddleware = (requiredRoles = []) => {
 
 };
 
-module.exports = AuthMiddleware;
+module.exports = {
+    AuthMiddleware
+}

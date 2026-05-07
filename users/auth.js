@@ -1,6 +1,6 @@
 const connection = require("../Config/db-config");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const { ulid } = require("ulid");
 const dotenv = require("dotenv");
 

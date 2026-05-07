@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "random-script":"node hash-script.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "jsonwebtoken": "^9.0.3",
     "mysql": "^2.18.1",
     "mysql2": "^3.22.3",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "ulid": "^3.0.2"
   }
 }
