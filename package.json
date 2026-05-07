@@ -1,0 +1,33 @@
+{
+  "name": "tonad",
+  "version": "1.0.0",
+  "description": "CBT Examination System\r A modern gamified CBT (Computer-Based Testing) platform built to make exam preparation more interactive, competitive, and engaging for students preparing for examinations such as WAEC and NECO.\r The system combines traditional online examinations with social and competitive learning features to create a smarter learning ecosystem for students.\r Features",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sammie004/Tonad-Backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sammie004/Tonad-Backend/issues"
+  },
+  "homepage": "https://github.com/sammie004/Tonad-Backend#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.22.3",
+    "nodemon": "^3.1.14"
+  }
+}
