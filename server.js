@@ -12,8 +12,10 @@ dotenv.config()
 
 // route imports
 const userAuth = require("./routes/user/user-Auth")
+const dashboard = require("./routes/user/user-Dashboard")
 // # routes  usages
-app.use('/api/student',userAuth)
+app.use('/api/student', userAuth)
+app.use('/api/student', dashboard)
 
 
 // set up the server to listen on a particular port

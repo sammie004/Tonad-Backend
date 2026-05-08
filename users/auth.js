@@ -139,6 +139,84 @@ const sendVerificationEmail = async (email, token) => {
     });
 };
 
+//verification mail frontend
+const renderPage = (status) => {
+    const states = {
+        success: {
+            icon: `<path d="M8 18.5L14.5 25L28 11" stroke="#1D9E75" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+            iconBg: '#E1F5EE',
+            iconColor: '#1D9E75',
+            title: `You're <em>verified</em>.`,
+            message: 'Your email address has been confirmed and your account is now active. You can now go back and log in.',
+            badge: '🎉 Welcome aboard!'
+        },
+        invalid: {
+            icon: `<path d="M12 12L24 24M24 12L12 24" stroke="#A32D2D" stroke-width="2.5" stroke-linecap="round"/>`,
+            iconBg: '#FCEBEB',
+            iconColor: '#A32D2D',
+            title: `Link <em>invalid</em>.`,
+            message: 'This verification link is invalid or has already been used. Please register again to get a new link.',
+            badge: null
+        },
+        error: {
+            icon: `<path d="M18 12V19M18 24V24.5" stroke="#A32D2D" stroke-width="2.5" stroke-linecap="round"/><path d="M15.5 6.8L4.2 26.2A3 3 0 006.8 30.5H29.2a3 3 0 002.6-4.5L20.5 6.8a3 3 0 00-5 0z" stroke="#A32D2D" stroke-width="2" stroke-linejoin="round"/>`,
+            iconBg: '#FCEBEB',
+            iconColor: '#A32D2D',
+            title: `Something <em>went wrong</em>.`,
+            message: 'We ran into an unexpected error. Please try clicking the link again or contact support.',
+            badge: null
+        }
+    };
+
+    const s = states[status];
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Verification</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#F1EFE8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;overflow:hidden;position:relative}
+    body::before{content:'';position:fixed;top:-200px;right:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,#CECBF6 0%,transparent 70%);opacity:0.4;pointer-events:none}
+    body::after{content:'';position:fixed;bottom:-150px;left:-150px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,#9FE1CB 0%,transparent 70%);opacity:0.3;pointer-events:none}
+    .card{background:#fff;border-radius:20px;border:1px solid rgba(0,0,0,0.07);padding:3rem 3.5rem;max-width:460px;width:100%;text-align:center;position:relative;z-index:1;animation:rise 0.6s cubic-bezier(0.22,1,0.36,1) both}
+    @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+    .brand{display:inline-flex;align-items:center;gap:8px;margin-bottom:2rem;padding:6px 14px;background:#EEEDFE;border-radius:99px}
+    .brand-dot{width:8px;height:8px;border-radius:50%;background:#534AB7}
+    .brand-name{font-size:13px;font-weight:500;color:#3C3489;letter-spacing:0.02em}
+    .icon-wrap{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.75rem;position:relative;color:${s.iconColor};background:${s.iconBg}}
+    .icon-wrap svg{animation:pop 0.5s 0.3s cubic-bezier(0.34,1.56,0.64,1) both}
+    @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+    .icon-wrap::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid currentColor;opacity:0;animation:pulse 2s 0.8s ease-out infinite}
+    @keyframes pulse{0%{opacity:0.5;transform:scale(1)}100%{opacity:0;transform:scale(1.3)}}
+    h1{font-family:'Instrument Serif',serif;font-size:30px;color:#2C2C2A;line-height:1.2;margin-bottom:0.75rem}
+    h1 em{font-style:italic;color:#534AB7}
+    .subtitle{font-size:15px;color:#888780;line-height:1.6;margin-bottom:1.75rem}
+    .divider{height:1px;background:linear-gradient(to right,transparent,#e0ddd4,transparent);margin:0 0 1.75rem}
+    .badge{display:inline-block;padding:6px 14px;background:#E1F5EE;border-radius:99px;font-size:13px;color:#0F6E56;font-weight:500;margin-bottom:1.75rem}
+    .note{margin-top:1.5rem;font-size:12px;color:#B4B2A9}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-name">YourApp</span>
+    </div>
+    <div class="icon-wrap">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">${s.icon}</svg>
+    </div>
+    <h1>${s.title}</h1>
+    <p class="subtitle">${s.message}</p>
+    ${s.badge ? `<div class="divider"></div><span class="badge">${s.badge}</span>` : ''}
+    <p class="note">YourApp &copy; ${new Date().getFullYear()}</p>
+  </div>
+</body>
+</html>`;
+}; 
 
 // =========================================================
 // CHECK IF USER EXISTS
@@ -160,6 +238,7 @@ const checkUserExists = (email) => {
 // =========================================================
 
 const OnboardUser = async (req, res) => {
+    console.log("incoming onboarding request with body:", req.body);
     try {
         const {
             email, password, username,
@@ -254,10 +333,9 @@ const VerifyEmail = async (req, res) => {
         const { token } = req.query;
 
         if (!token) {
-            return res.status(400).json({ error: "Verification token is required" });
+            return res.status(400).send(renderPage('invalid'));
         }
 
-        // Find user by token
         const findQuery = `
             SELECT * FROM users 
             WHERE verification_token = ? AND is_verified = FALSE
@@ -271,12 +349,11 @@ const VerifyEmail = async (req, res) => {
         });
 
         if (users.length === 0) {
-            return res.status(400).json({ error: "Invalid or expired verification token" });
+            return res.status(400).send(renderPage('invalid'));
         }
 
         const user = users[0];
 
-        // Mark as verified and clear the token
         const updateQuery = `
             UPDATE users 
             SET is_verified = TRUE, verification_token = NULL 
@@ -290,15 +367,14 @@ const VerifyEmail = async (req, res) => {
             });
         });
 
-        return res.status(200).json({ message: "Email verified successfully. You can now log in." });
+        console.log("✅ Email verified for user:", user.email);
+        return res.status(200).send(renderPage('success'));
 
     } catch (error) {
         console.log("❌ Verify Email Error", error);
-        return res.status(500).json({ error: "Internal server error" });
+        return res.status(500).send(renderPage('error'));
     }
 };
-
-
 // =========================================================
 // USER LOGIN
 // =========================================================
@@ -525,6 +601,6 @@ module.exports = {
     OnboardUser,
     VerifyEmail,
     UserAuth,
-    ForgotPassword,   // <-- new
-    ResetPassword     // <-- new
+    ForgotPassword,   
+    ResetPassword     
 };
