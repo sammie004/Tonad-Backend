@@ -1,17 +1,16 @@
-// express router setup
-const router = require("express").Router()
+const router = require("express").Router();
 
-// module imports
-const { OnboardUser, UserAuth } = require("../../users/auth")
+const { OnboardUser, UserAuth, VerifyEmail, ForgotPassword, ResetPassword } = require("../../users/auth");
+const { AuthMiddleware } = require("../../middleware/authentication-middleware");
 
-// middleware importations
-const { AuthMiddleware } = require("../../middleware/authentication-middleware")
+// public routes
+router.post("/student-onboarding",  OnboardUser);
+router.post("/student-login",       UserAuth);
+router.get("/verify-email",         VerifyEmail);
+router.post("/forgot-password",     ForgotPassword);
+router.post("/reset-password",      ResetPassword);
 
-// routes set-up
-router.post('/student-onboarding', OnboardUser)
-router.post('/student-login', AuthMiddleware, UserAuth)
+// example of a protected route — AuthMiddleware goes here
+// router.get("/student-profile", AuthMiddleware, GetProfile);
 
-
-
-// export module
-module.exports = router
+module.exports = router;

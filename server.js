@@ -17,7 +17,7 @@ app.use('/api/student',userAuth)
 
 
 // set up the server to listen on a particular port
-const PORT = 3000 || process.env.PORT;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
 })
