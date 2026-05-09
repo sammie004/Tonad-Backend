@@ -1,26 +1,45 @@
-// =in-app dependencies
-const mysql = require("mysql")
-const dotenv = require("dotenv")
-dotenv.config()
+const mysql = require("mysql");
+const dotenv = require("dotenv");
 
-// create a connection to the database
-const connection = mysql.createConnection({
+dotenv.config();
+
+
+// =====================================================
+// CREATE MYSQL CONNECTION POOL
+// =====================================================
+
+const connection = mysql.createPool({
+    connectionLimit: 10, // number of simultaneous connections
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT
-})
+});
 
-// test the connection to the database
-connection.connect((err) => {
-    if (err) {  
-        console.log(`❌ Error creating connection to the database`)
-        console.log(err)
-    } else {
-        console.log(`✅ Successfully connected to the database`)
+
+// =====================================================
+// TEST POOL CONNECTION
+// =====================================================
+
+    connection.getConnection((err, connection) => {
+
+    if (err) {
+        console.log("❌ Error connecting to database pool");
+        console.log(err);
+        return;
     }
-})
 
-// export the connection for use in other files
+    if (connection) {
+        console.log("✅ MySQL connection pool ready");
+        connection.release(); // return connection back to pool
+    }
+
+});
+
+
+// =====================================================
+// EXPORT POOL (NOT SINGLE CONNECTION)
+// =====================================================
+
 module.exports = connection;

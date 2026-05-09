@@ -5,6 +5,7 @@ const { ulid } = require("ulid");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
+const generatePublicId = require("../generate-public-id");
 
 dotenv.config();
 
@@ -24,12 +25,13 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendVerificationEmail = async (email, token) => {
-    const verifyUrl = `${process.env.APP_URL}/api/student/verify-email?token=${token}`;
+    // const verifyUrl = `${process.env.APP_URL}/api/student/verify-email?token=${token}`;local testing
+    const verifyUrl = `${process.env.NGROK_API_PREFIX}/api/student/verify-email?token=${token}`;
 
     await transporter.sendMail({
-        from: `"YourApp" <${process.env.MAIL_USER}>`,
+        from: `"WonderApp" <${process.env.MAIL_USER}>`,
         to: email,
-        subject: "Confirm your email address — YourApp",
+        subject: "Confirm your email address — WonderApp",
         html: `
         <!DOCTYPE html>
         <html lang="en">
@@ -56,7 +58,7 @@ const sendVerificationEmail = async (email, token) => {
                                 <td style="background:rgba(255,255,255,0.15);border-radius:8px;width:32px;height:32px;text-align:center;vertical-align:middle;">
                                   <span style="font-size:18px;color:#ffffff;line-height:32px;">⚡</span>
                                 </td>
-                                <td style="padding-left:10px;font-size:15px;font-weight:500;color:#EEEDFE;letter-spacing:0.01em;">YourApp</td>
+                                <td style="padding-left:10px;font-size:15px;font-weight:500;color:#EEEDFE;letter-spacing:0.01em;">WonderApp</td>
                               </tr>
                             </table>
                           </td>
@@ -121,7 +123,7 @@ const sendVerificationEmail = async (email, token) => {
                     <td style="padding:20px 40px;border-top:1px solid #e0ddd4;margin-top:24px;">
                       <table width="100%" cellpadding="0" cellspacing="0">
                         <tr>
-                          <td style="font-size:12px;color:#B4B2A9;">© 2026 YourApp. All rights reserved.</td>
+                          <td style="font-size:12px;color:#B4B2A9;">© 2026 WonderApp. All rights reserved.</td>
                           <td align="right" style="font-size:12px;color:#B4B2A9;">Lagos, NG</td>
                         </tr>
                       </table>
@@ -204,7 +206,7 @@ const renderPage = (status) => {
   <div class="card">
     <div class="brand">
       <div class="brand-dot"></div>
-      <span class="brand-name">YourApp</span>
+      <span class="brand-name">WonderApp</span>
     </div>
     <div class="icon-wrap">
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none">${s.icon}</svg>
@@ -212,7 +214,7 @@ const renderPage = (status) => {
     <h1>${s.title}</h1>
     <p class="subtitle">${s.message}</p>
     ${s.badge ? `<div class="divider"></div><span class="badge">${s.badge}</span>` : ''}
-    <p class="note">YourApp &copy; ${new Date().getFullYear()}</p>
+    <p class="note">WonderApp &copy; ${new Date().getFullYear()}</p>
   </div>
 </body>
 </html>`;
@@ -270,7 +272,7 @@ const OnboardUser = async (req, res) => {
         // GENERATE IDS & VERIFICATION TOKEN
         // =============================================
 
-        const public_id = ulid();
+        const public_id = generatePublicId();
         const verification_token = crypto.randomBytes(32).toString("hex");
 
 
@@ -595,12 +597,37 @@ const ResetPassword = async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 };
+// check verification status
+const CheckVerificationStatus = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const users = await checkUserExists(email);
 
+        if (users.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        const user = users[0];
+
+        const query = `select is_verified from users where email = ?`;
+
+        connection.query(query, [email], (err, results) => {
+            if (err) {
+                return res.status(500).json({ error: "DB error" });
+            }
+            return res.json({ is_verified: results[0].is_verified });
+        });
+
+    } catch (error) {
+        console.log("❌ Check Verification Status Error", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
 
 module.exports = {
     OnboardUser,
     VerifyEmail,
     UserAuth,
     ForgotPassword,   
-    ResetPassword     
+    ResetPassword,
+    CheckVerificationStatus
 };
